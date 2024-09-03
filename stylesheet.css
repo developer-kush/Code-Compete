@@ -1,0 +1,313 @@
+.text-entry{
+    padding: 10px 15px 10px 15px;
+    margin: 5px 5px 5px 5px;
+    border-radius: 5px;
+    background-color: black;
+    color: white;
+    font-weight: 500;
+    outline: none;
+}
+
+.text-entry:focus, .text-entry:hover{
+    outline: none;
+    border: none;
+}
+
+.vertical-separator {
+    background-color: #555;
+    margin: 0px 10px 0px 10px;
+    width: 1px; 
+    height: 100%;
+}
+
+.contest-menu{
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.credentials-submit-button{
+    cursor: pointer;
+    background-color: #333333; 
+    color: white; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    font-weight: bold;
+}
+
+.initial-page-heading{
+    min-width: 400px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 35px;
+    color: white;
+    margin: 10px 10px 0px 10px;
+}
+
+.initial-page-subheading{
+    min-width: 400px;
+    text-align: center;
+    margin: 10px 10px 20px 10px;
+}
+
+.initial-page-instructions-label{
+    padding: 5px 5px 5px 5px;
+    min-width: 400px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.initial-page-link-label{
+    padding: 5px 5px 5px 5px;
+    min-width: 400px;
+    text-align: center;
+    font-weight: 600;
+    color: #1f8ead;
+}
+
+.initial-page-layout{
+    padding: 5px 5px 5px 5px;
+    /* background-color: red; */
+    background-image: url('./assets/home-bg.jpg');
+    border-radius: 5px;
+    background-size: cover;
+    background-position: 0%;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+}
+
+.navigation{
+    padding: 10px 10px 10px 10px;
+    display: flex;
+    align-items: justify-content;
+    border-radius: 5px 5px 0px 0px;
+    width: 600px;
+    background-color: black;
+}
+
+.nav-header-name{
+    width: fit-content;
+    padding: 5px 5px 5px 5px;
+    margin: 0px 10px 0px 10px;
+    border-radius: 5px;
+    font-size: 25px;
+    font-weight: 700;
+    color: white;
+}
+
+.refresh-button{
+    width: fit-content;
+    margin: 0px 5px 0px 5px;
+    padding: 5px 15px 5px 15px;
+    border-radius: 10px;
+    background-color: #004444;
+}
+
+.settings-button{
+    width: fit-content;
+    margin: 0px 5px 0px 5px;
+    padding: 5px 15px 5px 15px;
+    border-radius: 10px;
+    background-color: #004444;
+}
+
+.contest-menu-layout{
+    max-height: 300px;
+    padding: 10px 10px 10px 10px;
+    border-radius: 0px 0px 5px 5px;;
+    background-color: #0C0C0C;
+}
+
+.left-contest-menu-box{
+    max-height: 300px;
+    width: 300px;
+}
+
+/* .left-contest-menu-scroll{
+    margin-left: 300px;
+    width: 250px;
+} */
+
+.contest-menu-item{
+    max-width: 300px;
+    text-overflow: ellipsis;
+    padding: 10px 10px 10px 10px;
+    border-radius: 5px;
+    align-items: start;
+    gap: 10px;
+}
+
+.contest-menu-item-label{
+    width: 200px;
+    font-weight: 700;
+    margin-left: 5px;
+}
+
+.nav-buttons{
+    margin-left: 325px;
+    margin-right: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.right-contest-menu-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 10px 10px 10px;
+    border-radius: 5px;
+}
+
+.contest-info-name{
+    font-weight: 700;
+    padding: 10px 10px 10px 10px;
+    border-radius: 5px;
+    margin: auto;
+    width: 300px;
+    height: 30px;
+    text-align: center;
+    font-size: 20px;
+    color: white;
+    background-color: #003333;
+}
+
+.contest-info-datetime{
+    font-weight: 600;
+    padding: 10px 10px 10px 10px;
+    border-radius: 5px;
+    margin: auto;
+    width: 200px;
+    text-align: center;
+    font-size: 12.5px;
+    color: white;
+}
+
+.contest-time-left{
+    width: 30px;
+    font-weight: 800;
+    background-color: black;
+    border-radius: 5px;
+    padding: 5px 5px 5px 5px;
+    text-align: center;
+    margin-left: 10px;
+}
+
+.settings-icon{
+    color: white;
+}
+
+.contest-info-queue{
+    padding: 5px;
+    margin-top: 0px;
+}
+
+.contest-info-queue-header{
+    height: 10px;
+    padding: 2px 0px 2px 0px;
+}
+
+.contest-info-queue-header-label{
+    height: 10px;
+    font-weight: 700;
+    font-size: 10px;
+}
+
+.horizontal-separator {
+    background-color: #555;
+    margin: 10px 0px 10px 0px;
+    width: 100%; 
+    height: 1px;
+}
+
+/* ------------------------------------------------------------------ */
+
+/* General styles for the settings layout */
+.settings-main-box {
+    background-color: #0C0C0C;
+    min-width: 700px;
+    max-width: 700px;
+}
+
+.settings-scrollview {
+    overflow-x: hidden;
+    background-color: #0C0C0C;
+    min-width: 700px;
+    max-width: 700px;
+    max-height: 300px;
+    scrollbar-width: none;
+}
+
+.settings-scrollview::-webkit-scrollbar {
+    display: none;
+}
+
+.settings-content {
+    min-width: 100%;
+    padding: 10px;
+}
+
+.settings-label {
+    color: #fff;
+    padding: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.platform-row-box {
+    width: 100%;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+.platform-toggle-box {
+    flex: 1;
+    margin-left: 10px;
+    background-color: #181818;
+    min-width: 190px;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.platform-label {
+    color: #fff;
+    min-width: 150px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.platform-toggle-button {
+    min-width: 20px;
+    max-width: 20px;
+    padding: 5px 10px;
+    font-weight: 600px;
+    font-style: bold;
+    font-size: 11px;
+    background-color: #007768;
+    color: #fff;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.platform-toggle-active{
+    background-color: #007768;
+}
+
+.platform-toggle-inactive{
+    background-color: #993333;
+}
+
+.initial-page-error-label {
+    padding: 10px;
+    background-color: black;
+    color: red;
+}
+
+.settings-icon {
+    icon-size: 16px;
+}
