@@ -1,4 +1,4 @@
-const GETTEXT_DOMAIN = 'my-indicator-extension';
+const GETTEXT_DOMAIN = 'code-compete';
 
 const { St, Clutter, GObject, Gio, GLib } = imports.gi;
 
@@ -15,43 +15,37 @@ function openUrl(url) {
     try {
         let browser = Gio.AppInfo.get_default_for_uri_scheme("http");
         if (browser) {
-            global.log(`Opening URL: ${url}`);
+            console.log(`Opening URL: ${url}`);
             browser.launch_uris([url], null);
         } else {
-            global.log('No default web browser found');
+            console.log('No default web browser found');
         }
     } catch (e){
-        global.log(`Failed to Open because of : ${e}`)
+        console.log(`Failed to Open because of : ${e}`)
     }
 }
 
 function formatDateTimeRange(startDateTimeString, endDateTimeString) {
-    // Parse the datetime strings into Date objects
     const startDate = new Date(startDateTimeString);
     const endDate = new Date(endDateTimeString);
 
-    // Get current date
     const now = new Date();
-    now.setHours(0, 0, 0, 0); // Set the current time to midnight to compare dates only
+    now.setHours(0, 0, 0, 0);
 
-    // Calculate the time difference in days for start and end
     const diffStartDays = Math.floor((startDate - now) / (1000 * 60 * 60 * 24));
     const diffEndDays = Math.floor((endDate - now) / (1000 * 60 * 60 * 24));
 
-    // Options for time only
     const timeOptions = {
         hour: '2-digit',
         minute: '2-digit',
     };
 
-    // Options for the readable date and time format
     const dateTimeOptions = {
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric',
     };
 
-    // Format start date based on the date difference
     let startDateString;
     if (diffStartDays === 0) startDateString = 'Today';
     else if (diffStartDays === 1) startDateString = 'Tomorrow';
@@ -110,10 +104,10 @@ function getTimeLeftLabel(startTimeISO, endTimeISO) {
     function getTimeDifference(start, end) {
         const diffInSeconds = Math.floor((end - start) / 1000);
         const units = [
-            { label: 'd', value: 86400 }, // days
-            { label: 'h', value: 3600 },  // hours
-            { label: 'm', value: 60 },    // minutes
-            { label: 's', value: 1 }      // seconds
+            { label: 'd', value: 86400 }, 
+            { label: 'h', value: 3600 }, 
+            { label: 'm', value: 60 },
+            { label: 's', value: 1 }
         ];
 
         for (let unit of units) {
@@ -211,14 +205,15 @@ function getPlatformFromResource(host) {
         "hackerearth.com": "hackerearth.png",
         "techgig.com": "techgig.png",
         "lightoj.com": "lightoj.png",
-        "ac.nowcoder.com": "nowcoder.jpeg"
+        "ac.nowcoder.com": "nowcoder.jpeg",
+        "supecoder.dev": "supecoder.png"
     }[host] || "default.png";
 }
 
 function getPlatformNameFromResource(resourceId) {
     const resourceToPlatform = {
         "codeforces.com": "Codeforces",
-        "codeforces.com/gyms": "Codeforces",
+        "codeforces.com/gyms": "Codeforces GYMS",
         "leetcode.com": "Leetcode",
         "ctftime.org": "CTFtime",
         "toph.co": "Toph",
@@ -248,7 +243,7 @@ function getPlatformNameFromResource(resourceId) {
         "solved.ac": "Solved",
         "tlx.toki.id": "Toki",
         "icpc.global": "ICPC",
-        "icpc.global/regionals": "ICPC",
+        "icpc.global/regionals": "ICPC Regionals",
         "binarysearch.com": "Binarysearch",
         "spoj.com": "SPOJ",
         "usaco.org": "USACO",
@@ -256,8 +251,24 @@ function getPlatformNameFromResource(resourceId) {
         "hackerearth.com": "HackerEarth",
         "techgig.com": "Techgig",
         "lightoj.com": "LightOJ",
-        "ac.nowcoder.com": "NowCoder"
+        "ac.nowcoder.com": "NowCoder",
+        "supecoder.dev": "Supecoder"
     };
 
     return resourceToPlatform[resourceId] || "Others";
+}
+
+function getPlatformsList(){
+    const platforms = [
+        "codeforces.com", "codeforces.com/gyms", "leetcode.com", "toph.co", "atcoder.jp", "geeksforgeeks.org",
+        "topcoder.com", "cups.online", "yukicoder.me", "contest.yandex.ru/CYF",
+        "codechef.com", "luogu.com.cn", "hackerrank.com", "my.newtonschool.co",
+        "robocontest.uz", "dmoj.ca", "ucup.ac", "bestcoder.hdu.edu.cn", "codingame.com",
+        "codingcompetitions.withgoogle.com", "eolymp.com", "kaggle.com", "kep.uz",
+        "mycode.prepbytes.com", "open.kattis.com", "solved.ac", "tlx.toki.id",
+        "icpc.global", "binarysearch.com", "spoj.com", "usaco.org", "projecteuler.net",
+        "hackerearth.com", "techgig.com", "ctftime.org", "supecoder.dev"
+    ]
+    platforms.sort((a, b)=>getPlatformFromResource(a).localeCompare(getPlatformFromResource(b)))
+    return platforms
 }

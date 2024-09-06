@@ -1,8 +1,8 @@
 {
-  "name": "CP List",
-  "description": "Get a List and Quick Access to all Competitive Coding Contests on all major platforms.",
-  "uuid": "cplist@kushagra.agarwal.2709@gmail.com",
+  "name": "Code Compete",
+  "description": "Get a List and Quick Access to all Sport Coding Contests on all major platforms. This extension is using clist.by services to get the data and is not in any way affiliated with clist.by",
+  "uuid": "code-compete@developer-kush.github.com",
   "shell-version": [
-    "42"
+    "42", "43", "44"
   ]
 }

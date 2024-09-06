@@ -1,4 +1,4 @@
-const GETTEXT_DOMAIN = 'gnome-clist';
+const GETTEXT_DOMAIN = 'code-compete';
 
 const { St, Clutter, GObject, Gio, GLib } = imports.gi;
 
@@ -11,11 +11,13 @@ const PopupMenu = imports.ui.popupMenu;
 
 const _ = ExtensionUtils.gettext;
 
+const { DynamicTimerLabel } = Self.imports.components;
+
 const utils = Self.imports.utils;
 const clist = Self.imports.clist;
 const fileio = Self.imports.fileio;
 
-const { openUrl } = utils;
+const { openUrl, getPlatformsList } = utils;
 const fetchTesting = clist.Clist.fetchTesting;
 const timeRange = utils.formatDateTimeRange;
 const formatDuration = utils.formatDuration;
@@ -41,7 +43,6 @@ class ContestMenuItem extends PopupMenu.PopupBaseMenuItem {
     constructor(button, label, data, contestData) {
         super();
         this.style_class = 'contest-menu-item';
-        // this.style_class = "font-weight: 700;"
         this._button = button;
         this._data = data;
 
@@ -54,10 +55,12 @@ class ContestMenuItem extends PopupMenu.PopupBaseMenuItem {
 
         this.add_child(getIcon(contestData.platform));
         this.add_child(itemLabel);
-        this.add_child(getTimeLeftLabel(contestData.start, contestData.end));
+        this._timerLabel = new DynamicTimerLabel(contestData.start, contestData.end);
+        this.add_child(this._timerLabel)
+        // this.add_child(getTimeLeftLabel(contestData.start, contestData.end));
         
         this.connect('activate', () => {
-            global.log(`Opening ${this._data}`);
+            console.log(`Opening ${this._data}`);
             openUrl(this._data);
 
             // if (contestData.platform == codeforces){
@@ -75,6 +78,14 @@ class ContestMenuItem extends PopupMenu.PopupBaseMenuItem {
         this.connect('leave-event', ()=>{
             this.set_style('background-color: transparent;')
         });
+    }
+
+    destroy() {
+        if (this._timerLabel) {
+            this._timerLabel.destroy();
+            this._timerLabel = null;
+        }
+        super.destroy();
     }
 }
 
@@ -96,12 +107,30 @@ class ContestMenuButton extends PanelMenu.Button {
         this.name = 'Contests-Menu';
 
         if (JSON.stringify(readAPICredentials()) == `["none","none"]`) this._createInitialLayout();
-        else this._createMenuLayoutNew();
+        else this._createMenuLayout();
 
     }
 
-    _reset(){
-        this.menu.removeAll()
+    _reset() {
+        this.menu._getMenuItems().forEach(item => {
+            if (item instanceof ContestMenuItem) {
+                item.destroy();
+            }
+        });
+
+        this.menu.removeAll();
+
+        if (this.leftBox) {
+            this.leftBox.destroy_all_children();
+        }
+        if (this.rightBox) {
+            this.rightBox.destroy_all_children();
+        }
+
+        this.leftBox = null;
+        this.rightBox = null;
+        this.leftScroll = null;
+        this.contestMenu = null;
     }
 
     _createInitialLayout() {
@@ -119,7 +148,7 @@ class ContestMenuButton extends PanelMenu.Button {
     
             // Create the heading label
             let headingLabel = new St.Label({
-                text: 'Gnome-Clist',
+                text: 'Code Compete',
                 style_class: 'initial-page-heading',
                 style: 'font-weight: 900;'
             });
@@ -176,7 +205,7 @@ class ContestMenuButton extends PanelMenu.Button {
             this.apiKeyEntry.set_style('margin-bottom: 20px;');
     
         } catch (e) {
-            this._createMenuLayoutNew();
+            this._createMenuLayout();
         }
     }
 
@@ -187,9 +216,9 @@ class ContestMenuButton extends PanelMenu.Button {
     
             saveAPICredentials(username, apiKey);
 
-            this._createMenuLayoutNew()
+            this._createMenuLayout()
         } catch (e) {
-            global.logError('Error saving API credentials:', e.message);
+            console.error('Error saving API credentials:', e.message);
             // Display error message to user
             this.errorLabel.set_text(e.message);
         }
@@ -212,7 +241,6 @@ class ContestMenuButton extends PanelMenu.Button {
         }).catch(e => {
             try {
                 let contests = readContests();
-                // this.rightLabel.set_text(JSON.stringify(contests))
     
                 contests.forEach(item => {
                     let menuItem = new ContestMenuItem(this, item.name, item.url, item);
@@ -220,15 +248,16 @@ class ContestMenuButton extends PanelMenu.Button {
                 });
     
                 this.updateRightMenuPane(contests[0])
+
             } catch (e){
                 this.rightLabel.set_text(`Big Error : ${e.message}`)
             }
-            
         })
     }
 
     updateRightMenuPane(data) {
         this.rightBox.remove_all_children();
+        this.rightBox.add_child(new St.Label({ text: getPlatformNameFromResource(data.resource), style_class: 'contest-info-datetime' }));
         this.rightBox.add_child(new St.Label({ text: data.name, style_class: 'contest-info-name' }));
         this.rightBox.add_child(new St.Label({ text: timeRange(data.start, data.end), style_class: 'contest-info-datetime' }));
         this.rightBox.add_child(new St.Label({ text: `Duration: ${formatDuration(data.duration)}`, style_class: 'contest-info-datetime' }));
@@ -237,12 +266,12 @@ class ContestMenuButton extends PanelMenu.Button {
         this.rightBox.add_child(new St.DrawingArea({ style_class: "horizontal-separator" }));
         this.queue = new St.BoxLayout({ vertical: true, style_class: 'contest-info-queue' });
         this.queueHeader = new St.BoxLayout({ vertical: false, style_class: 'contest-info-queue-header' });
-        this.queueHeader.add_child(new St.Label({ text: 'QUEUE', style_class: 'contest-info-queue-header-label' }));
+        this.queueHeader.add_child(new St.Label({ text: '', style_class: 'contest-info-queue-header-label' }));
         this.queue.add(this.queueHeader);
         this.rightBox.add_child(this.queue);
     }
 
-    _createMenuLayoutNew(){
+    _createMenuLayout(){
         this._reset();
 
         let section = new PopupMenu.PopupMenuSection({
@@ -258,21 +287,21 @@ class ContestMenuButton extends PanelMenu.Button {
         this.navigation = new St.BoxLayout({ vertical: false, style_class: 'navigation', style: "min-width:600px; max-width: 700px" });
         this.mainBox.add(this.navigation);
 
-        this.navigation.add_child(new St.Label({ text: 'Gnome-Clist', style_class: 'nav-header-name' }));
+        this.navigation.add_child(new St.Label({ text: 'Code Compete', style_class: 'nav-header-name' }));
 
         this.navButtons = new St.BoxLayout({ vertical: false, style_class: 'nav-buttons' });
         this.navigation.add(this.navButtons);
 
-        this.ranksButton = new St.Button({
-            style_class: 'settings-button',
-            x_expand: false,
-        });
-        this.ranksButton.set_child(new St.Icon({
-            gicon: Gio.icon_new_for_string('system-list-symbolic'),
-            style_class: 'settings-icon',
-            icon_size: 16
-        }))
-        this.ranksButton.connect('clicked', this._createSettingsLayout.bind(this));
+        // this.ranksButton = new St.Button({
+        //     style_class: 'settings-button',
+        //     x_expand: false,
+        // });
+        // this.ranksButton.set_child(new St.Icon({
+        //     gicon: Gio.icon_new_for_string('system-list-symbolic'),
+        //     style_class: 'settings-icon',
+        //     icon_size: 16
+        // }))
+        // this.ranksButton.connect('clicked', this._createSettingsLayout.bind(this));
 
         this.settingsButton = new St.Button({
             style_class: 'settings-button',
@@ -290,6 +319,7 @@ class ContestMenuButton extends PanelMenu.Button {
 
         this.refreshButton = new St.Button({
             style_class: 'settings-button',
+            style: 'margin-left: 50px',
             x_expand: false,
         });
         this.refreshButton.set_child(new St.Icon({
@@ -298,10 +328,10 @@ class ContestMenuButton extends PanelMenu.Button {
             icon_size: 16
         }))
         this.refreshButton.connect('clicked', ()=>{
-            this._createMenuLayoutNew();
+            this._createMenuLayout();
         });
 
-        this.navButtons.add_child(this.ranksButton);
+        // this.navButtons.add_child(this.ranksButton);
         this.navButtons.add_child(this.refreshButton);
         this.navButtons.add_child(this.settingsButton);
         
@@ -365,25 +395,25 @@ class ContestMenuButton extends PanelMenu.Button {
         this.navigation.add(this.navButtons);
     
         // ERROR LABEL
-        this.errorLabel = new St.Label({ 
-            text: "ERROR LABEL", 
-            style_class: 'initial-page-error-label'
-        });
-        this.mainBox.add(this.errorLabel);
+        // this.errorLabel = new St.Label({ 
+        //     text: "ERROR LABEL", 
+        //     style_class: 'initial-page-error-label'
+        // });
+        // this.mainBox.add(this.errorLabel);
         // ERROR LABEL
     
         this.backButton = new St.Button({
+            style: 'margin-left: 150px',
             style_class: 'settings-button',
         });
         this.backButton.set_child(new St.Icon({
             gicon: Gio.icon_new_for_string('go-previous-symbolic'),
             style_class: 'settings-icon'
         }));
-        this.backButton.connect('clicked', this._createMenuLayoutNew.bind(this));
+        this.backButton.connect('clicked', this._createMenuLayout.bind(this));
     
         this.navButtons.add_child(this.backButton);
     
-        // Settings content with dark background
         let scrollView = new St.ScrollView({
             style_class: 'settings-scrollview vfade',
             x_expand: false,
@@ -404,16 +434,7 @@ class ContestMenuButton extends PanelMenu.Button {
         });
         this.settingsContent.add(platformsLabel);
     
-        const platforms = [
-            "codeforces.com", "leetcode.com", "toph.co", "atcoder.jp", "geeksforgeeks.org",
-            "topcoder.com", "cups.online", "yukicoder.me", "contest.yandex.ru/CYF",
-            "codechef.com", "luogu.com.cn", "hackerrank.com", "my.newtonschool.co",
-            "robocontest.uz", "dmoj.ca", "ucup.ac", "bestcoder.hdu.edu.cn", "codingame.com",
-            "codingcompetitions.withgoogle.com", "eolymp.com", "kaggle.com", "kep.uz",
-            "mycode.prepbytes.com", "open.kattis.com", "solved.ac", "tlx.toki.id",
-            "icpc.global", "binarysearch.com", "spoj.com", "usaco.org", "projecteuler.net",
-            "hackerearth.com", "techgig.com", "ctftime.org"
-        ];       
+        const platforms = getPlatformsList();       
     
         this.platformToggles = {};
         
@@ -434,7 +455,6 @@ class ContestMenuButton extends PanelMenu.Button {
                 style_class: 'platform-label'
             });
     
-            // Use St.Button to create a toggle-like button
             let toggleButton = new St.Button({
                 style_class: 'platform-toggle-inactive',
                 reactive: true,
@@ -458,7 +478,7 @@ class ContestMenuButton extends PanelMenu.Button {
                 } else {
                     toggleButton.style_class = 'platform-toggle-button platform-toggle inactive';
                 }
-                this.errorLabel.set_text(`Toggled ${platform}: ${currentState}`);
+                // this.errorLabel.set_text(`Toggled ${platform}: ${currentState}`);
                 fileio.updateIgnoredPlatforms(platform, !currentState);
                 toggleButton.updateLabel(currentState);
             });
@@ -467,8 +487,6 @@ class ContestMenuButton extends PanelMenu.Button {
             toggleBox.add(toggleButton);
     
             this.platformToggles[platform] = toggleButton;
-            
-            // Add the toggleBox to the row
             rowBox.add(toggleBox);
     
             // If we've added 3 items, add the rowBox to the settingsContent and create a new rowBox
@@ -486,12 +504,14 @@ class ContestMenuButton extends PanelMenu.Button {
             toggleButton.updateLabel(toggleButton.state);
         });
     }
-    
 
-    // _createSettingsLayout(){
-
-    // }
-
+    destroy(){
+        this.menu._getMenuItems().forEach(item => {
+            if (item instanceof ContestMenuItem) {
+                item.destroy();
+            }
+        });
+    }
 }
 
 // ==========================================================================================
@@ -501,7 +521,6 @@ let metadata;
 
 function init(meta) {
     metadata = meta;
-    // Initialization code here ...
 }
 
 function enable() {
@@ -510,7 +529,6 @@ function enable() {
 }
 
 function disable() {
-
     if (contestMenuButton) {
         Main.panel.menuManager.removeMenu(contestMenuButton.menu);
         contestMenuButton.destroy();

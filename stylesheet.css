@@ -119,7 +119,7 @@
 
 .left-contest-menu-box{
     max-height: 300px;
-    width: 300px;
+    width: 310px;
 }
 
 /* .left-contest-menu-scroll{
@@ -128,7 +128,7 @@
 } */
 
 .contest-menu-item{
-    max-width: 300px;
+    max-width: 310px;
     text-overflow: ellipsis;
     padding: 10px 10px 10px 10px;
     border-radius: 5px;
