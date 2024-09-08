@@ -1,31 +1,20 @@
 const GETTEXT_DOMAIN = 'code-compete';
 
-const { St, Clutter, GObject, Gio, GLib } = imports.gi;
+import St from 'gi://St';
+import Gio from 'gi://Gio';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Self = ExtensionUtils.getCurrentExtension();
-
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-
-const _ = ExtensionUtils.gettext;
-
-function openUrl(url) {
+export function openUrl(url) {
     try {
         let browser = Gio.AppInfo.get_default_for_uri_scheme("http");
         if (browser) {
-            console.log(`Opening URL: ${url}`);
             browser.launch_uris([url], null);
-        } else {
-            console.log('No default web browser found');
         }
     } catch (e){
-        console.log(`Failed to Open because of : ${e}`)
+        console.log('Browser could not be opened')
     }
 }
 
-function formatDateTimeRange(startDateTimeString, endDateTimeString) {
+export function formatDateTimeRange(startDateTimeString, endDateTimeString) {
     const startDate = new Date(startDateTimeString);
     const endDate = new Date(endDateTimeString);
 
@@ -75,7 +64,7 @@ function formatDateTimeRange(startDateTimeString, endDateTimeString) {
     return formattedString;
 }
 
-function formatDuration(seconds) {
+export function formatDuration(seconds) {
     if (isNaN(seconds) || seconds < 0) {
         throw new Error("Invalid input. Duration must be a non-negative number.");
     }
@@ -100,7 +89,7 @@ function formatDuration(seconds) {
 }
 
 
-function getTimeLeftLabel(startTimeISO, endTimeISO) {
+export function getTimeLeftLabel(startTimeISO, endTimeISO) {
     function getTimeDifference(start, end) {
         const diffInSeconds = Math.floor((end - start) / 1000);
         const units = [
@@ -150,7 +139,7 @@ function getTimeLeftLabel(startTimeISO, endTimeISO) {
     return label;
 }
 
-function convertToLocalTime(utcTimeISO) {
+export function convertToLocalTime(utcTimeISO) {
     const utcDate = new Date(utcTimeISO);
     const localDate = new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000);
     
@@ -164,7 +153,7 @@ function convertToLocalTime(utcTimeISO) {
     return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
-function getPlatformFromResource(host) {
+export function getPlatformFromResource(host) {
     return {
         "codeforces.com" : "cf.png",
         "codeforces.com/gyms": "cf.png",
@@ -210,7 +199,7 @@ function getPlatformFromResource(host) {
     }[host] || "default.png";
 }
 
-function getPlatformNameFromResource(resourceId) {
+export function getPlatformNameFromResource(resourceId) {
     const resourceToPlatform = {
         "codeforces.com": "Codeforces",
         "codeforces.com/gyms": "Codeforces GYMS",
@@ -258,7 +247,7 @@ function getPlatformNameFromResource(resourceId) {
     return resourceToPlatform[resourceId] || "Others";
 }
 
-function getPlatformsList(){
+export function getPlatformsList(){
     const platforms = [
         "codeforces.com", "codeforces.com/gyms", "leetcode.com", "toph.co", "atcoder.jp", "geeksforgeeks.org",
         "topcoder.com", "cups.online", "yukicoder.me", "contest.yandex.ru/CYF",

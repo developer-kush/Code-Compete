@@ -2,7 +2,8 @@
   "name": "Code Compete",
   "description": "Get a List and Quick Access to all Sport Coding Contests on all major platforms. This extension is using clist.by services to get the data and is not in any way affiliated with clist.by",
   "uuid": "code-compete@developer-kush.github.com",
+  "url": "https://github.com/developer-kush/Code-Compete",
   "shell-version": [
-    "42", "43", "44"
+    "45", "46", "47"
   ]
 }

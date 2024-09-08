@@ -1,7 +1,11 @@
-const { GObject, St, Clutter, GLib } = imports.gi;
+import St from 'gi://St';
+import GObject from 'gi://GObject';
+import Clutter from 'gi://Clutter';
+import GLib from 'gi://GLib';
 
-var DynamicTimerLabel = GObject.registerClass(
+export var DynamicTimerLabel = GObject.registerClass(
 class DynamicTimerLabel extends St.Bin {
+    
     _init(startTime, endTime) {
         super._init();
         this._label = new St.Label({ text: '...' , style_class: 'contest-time-left'});
