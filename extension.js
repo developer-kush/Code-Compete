@@ -533,7 +533,7 @@ export default class CodeCompeteExtension extends Extension {
     enable() {
         global.codeCompetePath = this.path;
         this.contestMenuButton = new ContestMenuButton();
-        Main.panel.addToStatusArea(this.metadata._uuid, this.contestMenuButton);
+        Main.panel.addToStatusArea(this.uuid, this.contestMenuButton);
     }
 
     disable() {
